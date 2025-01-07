@@ -15,7 +15,7 @@ use GuzzleHttp\Client;
 
 Route::get('/', function () {
     $data = [
-        'TipoServico' => 'EXP',
+        'TipoServico' => '1',
         'CepDestino' => '11035040',
         'Peso' => '0,47',
         'ValorDeclarado' => '139,40',
@@ -45,10 +45,10 @@ function calcularFrete(array $data)
     $body = <<<XML
 <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:calcularFrete">
     <soapenv:Header>
-        <urn:Auth>
+        <Auth xmlns="http://edi.totalexpress.com.br/soap/webservice_calculo_frete.total">
             <Username>sunfit-prod</Username>
             <Password>d3yeCmLR78</Password>
-        </urn:Auth>
+        </Auth>
     </soapenv:Header>
     <soapenv:Body>
         <urn:calcularFrete soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -79,6 +79,6 @@ XML;
         return $response->getBody()->getContents();
     } catch (\Exception $e) {
         // Trata erros
-        return 'Erro: ' . $e->getMessage();
+        return 'Erro: ' . $e->getMessage().'teste1';
     }
 }
