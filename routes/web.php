@@ -42,28 +42,32 @@ function calcularFrete(array $data)
         'SOAPAction' => 'urn:calcularFrete' // Substitua pelo SOAPAction correto, se necessário
     ];
 
-    // Corpo da requisição com placeholders para variáveis
     $body = <<<XML
-                    <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:calcularFrete">
-                    <soapenv:Header/>
-                    <soapenv:Body>
-                        <urn:calcularFrete soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-                            <calcularFreteRequest xsi:type="web:calcularFreteRequest" xmlns:web="http://edi.totalexpress.com.br/soap/webservice_calculo_frete.total">
-                            <REID xsi:type="xsd:string">62463</REID> <!-- Adicionando o campo REID -->
-                                <TipoServico xsi:type="xsd:string">{$data['TipoServico']}</TipoServico>
-                                <CepDestino xsi:type="xsd:nonNegativeInteger">{$data['CepDestino']}</CepDestino>
-                                <Peso xsi:type="xsd:string">{$data['Peso']}</Peso>
-                                <ValorDeclarado xsi:type="xsd:string">{$data['ValorDeclarado']}</ValorDeclarado>
-                                <TipoEntrega xsi:type="xsd:nonNegativeInteger">{$data['TipoEntrega']}</TipoEntrega>
-                                <ServicoCOD xsi:type="xsd:boolean">{$data['ServicoCOD']}</ServicoCOD>
-                                <Altura xsi:type="xsd:nonNegativeInteger">{$data['Altura']}</Altura>
-                                <Largura xsi:type="xsd:nonNegativeInteger">{$data['Largura']}</Largura>
-                                <Profundidade xsi:type="xsd:nonNegativeInteger">{$data['Profundidade']}</Profundidade>
-                            </calcularFreteRequest>
-                        </urn:calcularFrete>
-                    </soapenv:Body>
-                </soapenv:Envelope>
-                XML;
+<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:calcularFrete">
+    <soapenv:Header>
+        <urn:Auth>
+            <Username>sunfit-prod</Username>
+            <Password>d3yeCmLR78</Password>
+        </urn:Auth>
+    </soapenv:Header>
+    <soapenv:Body>
+        <urn:calcularFrete soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+            <calcularFreteRequest xsi:type="web:calcularFreteRequest" xmlns:web="http://edi.totalexpress.com.br/soap/webservice_calculo_frete.total">
+                <REID xsi:type="xsd:string">62463</REID>
+                <TipoServico xsi:type="xsd:string">{$data['TipoServico']}</TipoServico>
+                <CepDestino xsi:type="xsd:nonNegativeInteger">{$data['CepDestino']}</CepDestino>
+                <Peso xsi:type="xsd:string">{$data['Peso']}</Peso>
+                <ValorDeclarado xsi:type="xsd:string">{$data['ValorDeclarado']}</ValorDeclarado>
+                <TipoEntrega xsi:type="xsd:nonNegativeInteger">{$data['TipoEntrega']}</TipoEntrega>
+                <ServicoCOD xsi:type="xsd:boolean">{$data['ServicoCOD']}</ServicoCOD>
+                <Altura xsi:type="xsd:nonNegativeInteger">{$data['Altura']}</Altura>
+                <Largura xsi:type="xsd:nonNegativeInteger">{$data['Largura']}</Largura>
+                <Profundidade xsi:type="xsd:nonNegativeInteger">{$data['Profundidade']}</Profundidade>
+            </calcularFreteRequest>
+        </urn:calcularFrete>
+    </soapenv:Body>
+</soapenv:Envelope>
+XML;
 
     try {
         $response = $client->post($url, [
