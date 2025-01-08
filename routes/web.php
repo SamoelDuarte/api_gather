@@ -113,7 +113,7 @@ function formatResponse($response)
             return [
                 'quotes' => [
                     [
-                        'name' => 'OPÇÃO FRETE 1',
+                        'name' => 'Frete Expresso',
                         'service' => $rota,
                         'price' => $valorServico,
                         'days' => $prazo,
