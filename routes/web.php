@@ -106,9 +106,6 @@ function formatResponse($response)
             $valorServico = (float)str_replace(',', '.', (string)$dadosFrete->ValorServico);
             $rota = (string)$dadosFrete->Rota;
 
-            // Determina o tipo de serviço com base na rota
-            $service = explode('-', $rota)[1] ?? 'SEDEX';
-
             // Monta o retorno
             return [
                 'quotes' => [
