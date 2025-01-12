@@ -88,66 +88,46 @@ function formatResponse($response)
     try {
         // Carrega o XML
         $xml = new SimpleXMLElement($response);
-        // $returns = $xml->children('s', true)->Body;
 
-        var_dump($xml->asXML());
-        exit;
-        foreach ($returns as $return) {
-            echo $return->calcularFreteResponse;
-        };
-        // Registra os namespaces
+        // Registra os namespaces para XPath
         $namespaces = $xml->getNamespaces(true);
-        // dd($namespaces); // Vamos ver quais namespaces são realmente registrados
+        $xml->registerXPathNamespace('soapenv', $namespaces['SOAP-ENV']);
+        $xml->registerXPathNamespace('ns1', $namespaces['ns1']);
 
-        // Navega até o Body usando o namespace SOAP-ENV
-        $body = $xml->children($namespaces['SOAP-ENV'])->Body;
+        // Usa XPath para encontrar os dados necessários
+        $result = $xml->xpath('//soapenv:Body/ns1:calcularFreteResponse/calcularFreteResponse/DadosFrete');
 
-        if (!$body) {
-            throw new Exception('Elemento Body não encontrado.');
-        }
+        // Verifica se encontrou o nó de DadosFrete
+        if (!empty($result)) {
+            $dadosFrete = $result[0];
 
-        // Navega para calcularFreteResponse usando o namespace ns1
-        $freteResponse = $body->children($namespaces['ns1'])->calcularFreteResponse;
-        dd($freteResponse);
-        if (!$freteResponse) {
-            throw new Exception('Elemento calcularFreteResponse não encontrado.');
-        }
+            // Extrai os valores necessários
+            $prazo = (int)$dadosFrete->Prazo;
+            $valorServico = (float)str_replace(',', '.', (string)$dadosFrete->ValorServico);
+            $rota = (string)$dadosFrete->Rota;
 
-        // Acessa DadosFrete
-        $dadosFrete = $freteResponse->DadosFrete;
-
-        // Vamos ver se o elemento DadosFrete está sendo encontrado corretamente
-        dd($dadosFrete->asXML());
-
-        if (!$dadosFrete) {
-            throw new Exception('Elemento DadosFrete não encontrado.');
-        }
-
-        // Extração dos valores
-        $prazo = (int)$dadosFrete->Prazo;
-        $valorServico = (float)str_replace(',', '.', (string)$dadosFrete->ValorServico);
-        $rota = (string)$dadosFrete->Rota;
-
-        // Determina o tipo de serviço com base na rota
-        $service = explode('-', $rota)[1] ?? 'SEDEX';
-
-        // Monta o retorno
-        return [
-            'quotes' => [
-                [
-                    'name' => 'OPÇÃO FRETE 1',
-                    'service' => $service,
-                    'price' => $valorServico,
-                    'days' => $prazo,
-                    'quote_id' => 1,
+            // Monta o retorno
+            return [
+                'quotes' => [
+                    [
+                        'name' => 'Frete Expresso',
+                        'service' => $rota,
+                        'price' => $valorServico,
+                        'days' => $prazo,
+                        'quote_id' => 1,
+                    ],
                 ],
-            ],
-        ];
+            ];
+        } else {
+            // Retorna erro se DadosFrete não for encontrado
+            return ['error' => 'Nó DadosFrete não encontrado no XML.'];
+        }
     } catch (\Exception $e) {
         // Retorna erro em caso de falha
         return ['error' => 'Erro ao processar o XML de resposta: ' . $e->getMessage()];
     }
 }
+
 
 
 
